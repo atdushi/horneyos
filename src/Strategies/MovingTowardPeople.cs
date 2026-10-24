@@ -1,6 +1,6 @@
 ﻿using Spectre.Console;
 
-namespace HorneyOS.Strategies.Implementations;
+namespace HorneyOS.Strategies;
 
 /// <summary>
 /// (Уступчивость): Ищет безопасность через одобрение. 

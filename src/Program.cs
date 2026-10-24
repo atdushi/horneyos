@@ -1,7 +1,6 @@
 ﻿using HorneyOS.Core;
 using HorneyOS.IdealSelf;
 using HorneyOS.Strategies;
-using HorneyOS.Strategies.Implementations;
 using Spectre.Console;
 
 // Разрешаем конфликт имен, явно указывая типы для Spectre.Console
@@ -156,5 +155,3 @@ class Program
         AnsiConsole.MarkupLine("[grey]Дальнейшие действия невозможны. Требуется сеанс психоанализа или перезапуск рантайма.[/]\n");
     }
 }
-
-
