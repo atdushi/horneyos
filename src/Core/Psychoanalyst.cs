@@ -16,7 +16,6 @@ public class Psychoanalyst
 
         try
         {
-
             // Используем Reflection, чтобы найти приватные поля
             Type mindType = typeof(NeuroticMind);
             FieldInfo securityField = mindType.GetField("_security", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -25,6 +24,18 @@ public class Psychoanalyst
 
             if (securityField != null && realSelfVitalityField != null && alienationField != null)
             {
+                double currentAlienation = (double)alienationField.GetValue(mind)!;
+                double currentSecurity = (double)securityField.GetValue(mind)!;
+
+                // Динамически создаем валидатор гордости перед проведением интервенции
+                var prideValidator = new NeuroticPrideValidator(currentAlienation, currentSecurity);
+
+                // Запускаем валидацию. Если гордость уязвлена — выполнение прервется исключением
+                prideValidator.ValidateInterventionSafety();
+
+                // Если валидация пройдена (сопротивление преодолено), сбрасываем налог и возвращаем витальность
+                Console.WriteLine("[Analyst] Сопротивление преодолено. Производится терапевтический сброс параметров...");
+
                 // Напрямую перезаписываем инкапсулированные данные инстанса
                 securityField.SetValue(mind, 100.0);
                 realSelfVitalityField.SetValue(mind, 100.0);
@@ -38,6 +49,12 @@ public class Psychoanalyst
             {
                 AnsiConsole.MarkupLine("[red]⚠ Ошибка метаданных: Не удалось сопоставить новые приватные поля ядра HorneyOS.[/]");
             }
+        }
+        catch (ResistanceException ex)
+        {
+            // Перехватываем кастомное исключение сопротивления
+            Console.WriteLine($"\n[Spectre.Console - Error] {ex.Message}");
+            Console.WriteLine("[Analyst] Интервенция провалена. Необходима предварительная проработка ShouldsTyrannyDecorator.");
         }
         catch (Exception ex)
         {

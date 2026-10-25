@@ -46,7 +46,7 @@ class Program
             string alienationBar = GetProgressBar((int)mind.AlienationEnergyCost, Color.DarkViolet, Color.Magenta1, inverse: true);
 
             table.AddRow("🛡️ Безопасность (_security)", $"{mind.Security:F1}%", securityBar);
-            table.AddRow("🌱 Витальность Реального Я (_realSelfVitality)", $"{mind.RealSelfVitality:F1}%", vitalityBar);
+            table.AddRow("🌱 Витальность Реального Я (_realSelfVitality)", $"{mind.RealSelfVitality:F1} ед.", vitalityBar);
             table.AddRow("💸 Налог на Отчуждение (_alienationEnergyCost)", $"{mind.AlienationEnergyCost:F1} ед.", alienationBar);
 
             // Выводим центрированную таблицу через Align, защищая рантайм от ошибки CS0311
