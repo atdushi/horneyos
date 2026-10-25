@@ -4,5 +4,5 @@
 public class BasicAnxietyException : Exception
 {
     public BasicAnxietyException(string msg)
-        : base($"[🚨 БАЗОВАЯ ТРЕВОГА: Изоляция во враждебной среде] {msg}") { }
+        : base($"[[🚨 БАЗОВАЯ ТРЕВОГА: Изоляция во враждебной среде]] {msg}") { }
 }

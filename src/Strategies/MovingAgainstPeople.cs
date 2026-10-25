@@ -15,7 +15,7 @@ namespace HorneyOS.Strategies
         public void Apply(ref double security, ref double realSelfVitality)
         {
             _exploitedResourcesCount++;
-            AnsiConsole.MarkupLine($"[red][⚔️ АГРЕССИЯ][/]: Мир враждебен. Захвачен и эксплуатируется внешний ресурс №{_exploitedResourcesCount}.");
+            AnsiConsole.MarkupLine($"[red][[⚔️ АГРЕССИЯ]][/]: Мир враждебен. Захвачен и эксплуатируется внешний ресурс №{_exploitedResourcesCount}.");
 
             // Агрессор чувствует безопасность только когда он доминирует
             security += 35.0;
@@ -25,7 +25,7 @@ namespace HorneyOS.Strategies
 
             if (_exploitedResourcesCount > 3)
             {
-                AnsiConsole.MarkupLine("[bold red][☠️ ПАРАНОЙЯ][/]: Вы захватили слишком много контроля. Система ожидает ответного удара, безопасность падает!");
+                AnsiConsole.MarkupLine("[bold red][[☠️ ПАРАНОЙЯ]][/]: Вы захватили слишком много контроля. Система ожидает ответного удара, безопасность падает!");
                 security -= 40.0;
             }
         }

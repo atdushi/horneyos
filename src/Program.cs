@@ -3,155 +3,131 @@ using HorneyOS.IdealSelf;
 using HorneyOS.Strategies;
 using Spectre.Console;
 
-// Разрешаем конфликт имен, явно указывая типы для Spectre.Console
-using Color = Spectre.Console.Color;
-using Rule = Spectre.Console.Rule;
-
-namespace HorneyOS;
-
 class Program
 {
     static void Main(string[] args)
     {
+        // Устанавливаем кодировку для корректного отображения эмодзи и спецсимволов в Windows-консоли
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-        // Инициализируем ядро невротической психики
+        // 1. Инициализация рантайма
         var mind = new NeuroticMind();
-
-        // По умолчанию выставляем уступчивую стратегию
-        ICopingStrategy currentStrategy = new MovingTowardPeople();
-
-        // Инициализация терапевтического инструмента
-        var analyst = new Psychoanalyst();
-
-        // Инициализируем Тиранию "Должен"
         var tyranny = new ShouldsTyrannyDecorator();
-
-        AnsiConsole.Write(
-            new FigletText("HorneyOS")
-                .Centered()
-                .Color(Color.Violet));
-
-        AnsiConsole.MarkupLine("[bold grey]v1.0.0-alpha[/] | Рантайм Карен Хорни успешно инициализирован.\n");
+        var therapist = new Psychoanalyst();
 
         while (true)
         {
-            //AnsiConsole.Clear();
+            AnsiConsole.Write(new FigletText("HorneyOS v9.0").Color(Color.DeepPink1));
+            AnsiConsole.MarkupLine("[bold italic magenta]Ортодоксальный психоаналитический рантайм запущен успешно.[/]\n");
 
-            // 1. Отрисовка Дашборда Состояния
-            var table = new Table().Border(TableBorder.Rounded);
-            table.AddColumn("[bold]Метрика Психики[/]");
-            table.AddColumn("[bold]Значение[/]");
+            // 2. Пассивное истощение ресурсов за счет Налога на Отчуждение при каждом цикле (тике) психики
+            try
+            {
+                mind.OnRuntimeTick();
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.WriteException(ex, ExceptionFormats.ShortenEverything);
+                AnsiConsole.MarkupLine("\n[bold red][[🚨 КОЛЛАПС]]:[/] Жизненная сила Реального Я упала до нуля. Наступил глубокий экзистенциальный ступор.");
+                WaitForAnyKey();
+                break; // Выход из симуляции или сброс рантайма
+            }
 
-            string securityColor = mind.Security > 40 ? "green" : "red";
-            table.AddRow("Защита от Базальной тревоги (Security)", $"[{securityColor}]{mind.Security:F1}%[/]");
-            table.AddRow("Жизненная сила Реального Я (RealSelfVitality)", $"[cyan]{mind.RealSelfVitality:F1} единиц[/]");
-            table.AddRow("Текущая Стратегия Защиты", $"[yellow]{currentStrategy.StrategyName}[/]");
+            // 3. Отрисовка интерактивного дашборда Spectre.Console
+            var table = new Table();
+            table.AddColumn("[bold yellow]Психический Ресурс[/]");
+            table.AddColumn("[bold green]Значение[/]");
+            table.AddColumn("[bold blue]Визуальный График Состояния[/]");
 
-            AnsiConsole.Write(new Panel(table).Header("🧠 Монитор Эго").BorderColor(Color.Violet));
+            // Формируем динамические цветные полосы для каждого ресурса
+            string securityBar = GetProgressBar((int)mind.Security, Color.Green, Color.Red, inverse: false);
+            string vitalityBar = GetProgressBar((int)mind.RealSelfVitality, Color.SpringGreen3, Color.DarkRed_1, inverse: false);
+            // Для налога цвет инвертирован: чем выше налог, тем «горячее» и опаснее должен быть бар
+            string alienationBar = GetProgressBar((int)mind.AlienationEnergyCost, Color.DarkViolet, Color.Magenta1, inverse: true);
 
-            // 2. Интерактивное Меню Действий
+            table.AddRow("🛡️ Безопасность (_security)", $"{mind.Security:F1}%", securityBar);
+            table.AddRow("🌱 Витальность Реального Я (_realSelfVitality)", $"{mind.RealSelfVitality:F1}%", vitalityBar);
+            table.AddRow("💸 Налог на Отчуждение (_alienationEnergyCost)", $"{mind.AlienationEnergyCost:F1} ед.", alienationBar);
+
+            // Выводим центрированную таблицу через Align, защищая рантайм от ошибки CS0311
+            AnsiConsole.Write(new Align(table, HorizontalAlignment.Center));
+            AnsiConsole.WriteLine();
+
+            // 4. Интерактивное Меню Действий
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Выберите [underline yellow]жизненное событие[/] или действие:")
                     .PageSize(10)
-                    .AddChoices(new[] {
+                    .AddChoices([
                         "💥 Получить критику от руководства (-40 к Безопасности)",
-                        "🚀 [[Идеал]] Сдать сложный проект по работе",
-                        "🎭 [[Идеал]] Подавить усталость и быть идеальным",
+                        "🚀 [[Идеал]] Сдать сложный проект по работе (Активация Тирании)",
+                        "🎭 [[Идеал]] Подавить усталость и быть идеальным (Взлет Налога)",
                         "🩺 Пройти сеанс психоанализа (Reflection Injection)",
-                        "🤝 Попробовать сменить стратегию защиты",
-                        "🔄 Восстановить ресурсы (Перезапуск рантайма)",
+                        "🔄 Сбросить рантайм к базовым настройкам",
                         "❌ Выйти из симуляции"
-                    }));
+                    ]));
 
-            // 3. Обработка Выбора
             if (choice.StartsWith("❌")) break;
 
-            if (choice.StartsWith("🔄"))
+            try
             {
-                mind = new NeuroticMind();
-                AnsiConsole.MarkupLine("[green] Психика перезагружена к исходному состоянию.[/]");
-                continue;
-            }
-
-            if (choice.StartsWith("🚀"))
-            {
-                try
+                if (choice.StartsWith("💥"))
                 {
+                    // Вектор уступчивой защиты по умолчанию для обработки кризиса
+                    mind.ProcessLifeEvent("Критика руководства", new MovingTowardPeople());
+                }
+                else if (choice.StartsWith("🚀"))
+                {
+                    // Вызов метода через GoF-декоратор без изменения структуры оригинального меню
                     mind.PerformIdealAction(tyranny.DeployPerfectProject);
                 }
-                catch (BasicAnxietyException ex) { HandleAnxiety(ex); }
-                continue;
-            }
-
-            if (choice.StartsWith("🎭"))
-            {
-                try
+                else if (choice.StartsWith("🎭"))
                 {
                     mind.PerformIdealAction(tyranny.SuppressAllWeakness);
                 }
-                catch (BasicAnxietyException ex) { HandleAnxiety(ex); }
-                continue;
-            }
-
-            if (choice.StartsWith("🩺"))
-            {
-                analyst.ConductTherapySession(mind);
-                AnsiConsole.Prompt(new TextPrompt<string>("[grey]Нажмите Enter, чтобы продолжить...[/]").AllowEmpty());
-                continue;
-            }
-
-            if (choice.StartsWith("🤝"))
-            {
-                var stratChoice = AnsiConsole.Prompt(
-                    new SelectionPrompt<string>()
-                        .Title("Выберите вектор адаптации (Coping Trend):")
-                        .AddChoices(new[] {
-                            "К людям (Уступчивость)",
-                            "Против людей (Агрессия)",
-                            "От людей (Обособленность)"
-                        }));
-
-                // Создаем реальные инстансы глубоких стратегий с внутренним состоянием
-                currentStrategy = stratChoice switch
+                else if (choice.StartsWith("🩺"))
                 {
-                    "Против людей (Агрессия)" => new MovingAgainstPeople(),
-                    "От людей (Обособленность)" => new MovingAwayFromPeople(),
-                    _ => new MovingTowardPeople()
-                };
-
-                AnsiConsole.MarkupLine($"[green][[✓]] Внутренняя доминанта переключена на:[/] {currentStrategy.StrategyName}\n");
-                continue;
-            }
-
-            if (choice.StartsWith("💥"))
-            {
-                try
-                {
-                    // Симулируем пропуск внешнего события через фильтры психики
-                    mind.ProcessLifeEvent("Критика руководства", currentStrategy);
+                    AnsiConsole.MarkupLine("[yellow][[🩺 АНАЛИЗ]]:[/] Психоаналитик пытается пробиться к приватным полям через Reflection...");
+                    therapist.ConductTherapySession(mind);
                 }
-                catch (BasicAnxietyException ex)
+                else if (choice.StartsWith("🔄"))
                 {
-                    // Перехватываем системную Базовую Тревогу
-                    AnsiConsole.Write(new Rule("[bold red]КРИТИЧЕСКИЙ СБОЙ: БАЗОВАЯ ТРЕВОГА[/]") { Justification = Justify.Left });
-                    AnsiConsole.MarkupLine($"[red]{Markup.Escape(ex.Message)}[/]");
-                    AnsiConsole.MarkupLine("[bold yellow]🚨 ВНИМАНИЕ:[/] Психика заблокирована в терминальной стадии невроза.");
-                    AnsiConsole.MarkupLine("[grey]Дальнейшие действия невозможны. Требуется полный перезапуск рантайма через меню.[/]\n");
-
-                    // Просто уходим на следующую итерацию. Дашборд честно покажет аварийные проценты.
-                    continue;
+                    mind = new NeuroticMind();
+                    tyranny = new ShouldsTyrannyDecorator();
+                    AnsiConsole.MarkupLine("[green]Рантайм перезапущен. Защитные механизмы сброшены.[/]");
                 }
             }
+            catch (BasicAnxietyException ex)
+            {
+                AnsiConsole.MarkupLine($"\n[bold red][[!]] Хронический сбой системы:[/] {ex.Message}");                
+            }
+
+            WaitForAnyKey();
+            Console.Clear();
         }
     }
 
-    private static void HandleAnxiety(BasicAnxietyException ex)
+    // Хелпер для генерации красивых текстовых прогресс-баров со Spectre-разметкой
+    private static string GetProgressBar(int value, Color activeColor, Color alertColor, bool inverse)
     {
-        AnsiConsole.Write(new Rule("[bold red]КРИТИЧЕСКИЙ СБОЙ: БАЗОВАЯ ТРЕВОГА[/]") { Justification = Justify.Left });
-        AnsiConsole.MarkupLine($"[red]{Markup.Escape(ex.Message)}[/]");
-        AnsiConsole.MarkupLine("[bold yellow]🚨 ВНИМАНИЕ:[/] Психика заблокирована в терминальной стадии невроза.");
-        AnsiConsole.MarkupLine("[grey]Дальнейшие действия невозможны. Требуется сеанс психоанализа или перезапуск рантайма.[/]\n");
+        int totalBlocks = 20;
+        // Ограничиваем значение в рамках от 0 до 100 для красивого рендеринга шкал
+        int normalizedValue = Math.Clamp(value, 0, 100);
+        int filledBlocks = (int)Math.Round((normalizedValue / 100.0) * totalBlocks);
+
+        // Определяем цвет на основе порогов и флага инверсии
+        bool isAlert = inverse ? normalizedValue > 60 : normalizedValue < 30;
+        string colorStr = isAlert ? alertColor.ToMarkup() : activeColor.ToMarkup();
+
+        string filled = new string('█', filledBlocks);
+        string empty = new string('░', totalBlocks - filledBlocks);
+
+        return $"[{colorStr}]{filled}{empty}[/]";
+    }
+
+    private static void WaitForAnyKey()
+    {
+        AnsiConsole.MarkupLine("\n[grey]Нажмите любую клавишу для продолжения психического цикла...[/]");
+        Console.ReadKey(true);
     }
 }

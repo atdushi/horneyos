@@ -33,7 +33,10 @@ public class NeuroticMind
         Console.WriteLine($"\n[⚡] Событие: {description}");
         _security -= 40; // Изменяем поле напрямую
 
-        if (_security < 20) throw new BasicAnxietyException("Защита пробита!");
+        if (_security < 20)
+        {
+            throw new BasicAnxietyException("Защита пробита!");
+        }
 
         // Передаем приватные поля по ссылке ref — теперь компилятор доволен
         defense.Apply(ref _security, ref _realSelfVitality);
@@ -42,7 +45,10 @@ public class NeuroticMind
     // 2. Используем наш кастомный делегат вместо Action
     public void PerformIdealAction(IdealActionDelegate idealAction)
     {
-        if (_security < 20) throw new BasicAnxietyException("Защита пробита! Вы парализованы тревожными мыслями.");
+        if (_security < 20)
+        {
+            throw new BasicAnxietyException("Защита пробита! Вы парализованы тревожными мыслями.");
+        }
 
         idealAction(ref _security, ref _realSelfVitality, ref _alienationEnergyCost);
     }
@@ -54,7 +60,7 @@ public class NeuroticMind
     public void OnRuntimeTick()
     {
         // Каждая единица налога на отчуждение вычитает 0.1 единицы витальности за тик
-        _realSelfVitality -= (_alienationEnergyCost * 0.1);
+        _realSelfVitality -= _alienationEnergyCost * 0.1;
 
         if (_realSelfVitality <= 0)
         {

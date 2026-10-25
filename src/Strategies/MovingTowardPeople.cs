@@ -13,7 +13,7 @@ public class MovingTowardPeople : ICopingStrategy
 
     public void Apply(ref double security, ref double realSelfVitality)
     {
-        AnsiConsole.MarkupLine("[magenta][🤝 УСТУПЧИВОСТЬ][/]: Активен паттерн 'Если я уступлю, меня не тронут'.");
+        AnsiConsole.MarkupLine("[magenta][[🤝 УСТУПЧИВОСТЬ]][/]: Активен паттерн 'Если я уступлю, меня не тронут'.");
 
         // Попытка купить безопасность ценой стирания границ Реального Я
         security += 25.0;
@@ -21,7 +21,7 @@ public class MovingTowardPeople : ICopingStrategy
 
         if (realSelfVitality < 30.0)
         {
-            AnsiConsole.MarkupLine("[italic magenta][⚠ ОБРЫВ ГРАНИЦ][/]: Витальность критически низкая. Развивается патологическая зависимость от чужого мнения.");
+            AnsiConsole.MarkupLine("[italic magenta][[⚠ ОБРЫВ ГРАНИЦ]][/]: Витальность критически низкая. Развивается патологическая зависимость от чужого мнения.");
         }
     }
 }
