@@ -3,7 +3,7 @@
 namespace HorneyOS.Core;
 
 // 1. Создаем собственный делегат, который легально поддерживает ref-параметры
-public delegate void IdealActionDelegate(ref double security, ref double realSelfVitality);
+public delegate void IdealActionDelegate(ref double security, ref double realSelfVitality, ref double alienationEnergyCost);
 
 public class NeuroticMind
 {
@@ -17,9 +17,16 @@ public class NeuroticMind
     /// </summary>
     private double _realSelfVitality = 100.0;
 
+    /// <summary>
+    /// Налог на отчуждение. Энергия, расходуемая на удержание маски Идеального Я 
+    /// и подавление сигналов от Реального Я. Растет при каждой карающей интервенции.
+    /// </summary>
+    private double _alienationEnergyCost = 10.0;
+
     // Публичные свойства для чтения извне
     public double Security => _security;
     public double RealSelfVitality => _realSelfVitality;
+    public double AlienationEnergyCost => _alienationEnergyCost;
 
     public void ProcessLifeEvent(string description, ICopingStrategy defense)
     {
@@ -37,6 +44,22 @@ public class NeuroticMind
     {
         if (_security < 20) throw new BasicAnxietyException("Защита пробита! Вы парализованы тревожными мыслями.");
 
-        idealAction(ref _security, ref _realSelfVitality);
+        idealAction(ref _security, ref _realSelfVitality, ref _alienationEnergyCost);
+    }
+
+    /// <summary>
+    /// Метод должен вызываться на каждой итерации бесконечного цикла Program.cs.
+    /// Моделирует непрерывное, фоновое истощение ресурсов отчужденной личностью.
+    /// </summary>
+    public void OnRuntimeTick()
+    {
+        // Каждая единица налога на отчуждение вычитает 0.1 единицы витальности за тик
+        _realSelfVitality -= (_alienationEnergyCost * 0.1);
+
+        if (_realSelfVitality <= 0)
+        {
+            _realSelfVitality = 0;
+            throw new Exception("[💥 ЭКЗИСТЕНЦИАЛЬНЫЙ СТУПОР]: Психика полностью истощена удержанием идеального образа. Нет энергии на жизнь.");
+        }
     }
 }
